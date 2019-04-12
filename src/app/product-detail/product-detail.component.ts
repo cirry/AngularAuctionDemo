@@ -11,20 +11,33 @@ import {Discuss, Product, ProductService} from '../shared/product.service';
 export class ProductDetailComponent implements OnInit {
   product: Product;
   comments: Discuss[];
+  newRating: number = 5;
+  newComment: string = '';
+  isCommentHidden: boolean = true;
+
   constructor(
      private routerInfo: ActivatedRoute,
      private productService: ProductService
   ) {
   }
   ngOnInit() {
-    console.log('我进了details了');
-    console.log(this.routerInfo.snapshot.params);
     const productId: number = this.routerInfo.snapshot.params['productId'];
-    console.log(productId);
-    this.product = this.productService.getProduct(productId);
-    console.log(this.product);
-    this.comments = this.productService.getCommentsForProductId(productId);
-    console.log(this.comments);
+    this.productService.getProduct(productId).subscribe(
+      product => this.product = product
+    );
+    this.productService.getCommentsForProductId(productId).subscribe(
+      comments => this.comments = comments
+    );
   }
-
+  addComment() {
+    let comment = new Discuss(0, this.product.id, new Date().toISOString(), '菜菜', this.newRating, this.newComment);
+    this.comments.unshift(comment);
+    let sum = this.comments.reduce(( sum, comments) => sum + comments.rating, 0);
+    console.log(sum);
+    this.product.rating = sum / this.comments.length;
+    console.log(this.product.rating);
+    this.newComment = null;
+    this.newRating = 5;
+    this.isCommentHidden = true;
+  }
 }

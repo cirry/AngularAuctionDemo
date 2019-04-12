@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Product, ProductService} from '../shared/product.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
-
+import { Observable, from } from 'rxjs';
 
 @Component({
   selector: 'app-product',
@@ -10,16 +10,10 @@ import { debounceTime } from 'rxjs/operators';
   styleUrls: ['./product.component.scss']
 })
 export class ProductComponent implements OnInit {
-  public keyword: string;
-  private titleFilter: FormControl = new FormControl();
-  products: Product[];
+
+  products: Observable<Product[]>;
 
   constructor(private productService: ProductService) {
-    this.titleFilter.valueChanges
-      .pipe(debounceTime(500))
-      .subscribe(
-        value => this.keyword = value
-      );
   }
 
   ngOnInit() {
